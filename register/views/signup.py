@@ -5,7 +5,10 @@
 
 .. moduleauthor:: Chris Bartlett
 """
+import requests
+
 from django.shortcuts import render
+from django.urls import reverse
 from django.views.generic import TemplateView
 
 from register.forms import SignUpForm
@@ -45,19 +48,6 @@ class SignUpView(TemplateView):
 
         return SignUpForm()
 
-    def get_price_information(self, country):
-        """
-        Call an external API to get the current price information for the
-        supplied ISO country code.
-
-        :param country: 2 character ISO country code
-        :type country: str
-        :return: price information for supplied country
-        :rtype: dict
-        """
-        # TODO: call external API
-        return {'data': []}
-
     def get(self, request, *args, **kwargs):
         """GET handler"""
         context = self.get_context(request, **kwargs)
@@ -65,25 +55,11 @@ class SignUpView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         """POST handler"""
-        # collect and check POST data
-        form = self.get_form(request)
+        url = request.build_absolute_uri(reverse('api:user'))
+        response = requests.post(url, request.POST)
 
-        if not form.is_valid():
+        if response.status_code != 200:
             context = self.get_context(request)
             return self.render_to_response(context)
 
-        # call external API
-        price_info = self.get_price_information(form.cleaned_data['country'])
-
-        if not price_info:
-            context = self.get_context(request)
-            context['api_error'] = True
-            return self.render_to_response(context)
-
-        # save data
-        user = form.instance
-        user.price_info = price_info
-        user.save()
-
-        # return response
-        return render(request, 'register/complete.html', form.cleaned_data)
+        return render(request, 'register/complete.html', response.json())
