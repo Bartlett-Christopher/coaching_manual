@@ -1,0 +1,47 @@
+{% extends 'register/base.html' %}
+
+{% block title %}
+    Registered users
+{% endblock title %}
+
+{% block content %}
+    <h1>Registered users</h1>
+
+    {% if not users %}
+        <p>There are currently no registered users.</p>
+    {% else %}
+        {% for user in users %}
+            <table style="padding-bottom: 10px">
+                <tr>
+                    <th style="text-align: left">First Name</th>
+                    <th style="text-align: left">Last Name</th>
+                    <th style="text-align: left">Email</th>
+                    <th style="text-align: left">Country</th>
+                </tr>
+                <tr>
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.country }}</td>
+                </tr>
+            </table>
+
+            <table style="padding-bottom: 30px">
+                <tr>
+                    <th style="text-align: left">Plan</th>
+                    <th style="text-align: left">Billing Interval</th>
+                    <th style="text-align: left">Frequency</th>
+                    <th style="text-align: left">Currency</th>
+                </tr>
+                {% for price_plan in user.price_info %}
+                    <tr>
+                        <td>{{ price_plan.plan }}</td>
+                        <td>{{ price_plan.billing_interval }}</td>
+                        <td>{{ price_plan.frequency }}</td>
+                        <td>{{ price_plan.currency }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endfor %}
+    {% endif %}
+{% endblock content %}

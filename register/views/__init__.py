@@ -5,8 +5,10 @@
 
 .. moduleauthor:: Chris Bartlett
 """
+from register.views.list import UserListView
 from register.views.signup import SignUpView
 
 __all__ = [
+    'UserListView',
     'SignUpView'
 ]

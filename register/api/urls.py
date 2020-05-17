@@ -3,7 +3,7 @@
 .. module:: register.api.urls
    :synopsis: Register API urls
 
-.. moduleauthor:: Chris Bartlett <chris.bartlett@therealbuzzgroup.com>
+.. moduleauthor:: Chris Bartlett
 """
 from django.conf.urls import url
 
