@@ -5,6 +5,7 @@
 
 .. moduleauthor:: Chris Bartlett
 """
+from django.shortcuts import render
 from django.views.generic import TemplateView
 
 from register.forms import SignUpForm
@@ -52,11 +53,15 @@ class SignUpView(TemplateView):
     def post(self, request, *args, **kwargs):
         """POST handler"""
         # collect and check POST data
+        form = self.get_form(request)
+
+        if not form.is_valid():
+            context = self.get_context(request)
+            return self.render_to_response(context)
 
         # call external API
 
         # save data
 
         # return response
-        context = self.get_context(request, **kwargs)
-        return self.render_to_response(context)
+        return render(request, 'register/complete.html', form.cleaned_data)

@@ -5,6 +5,11 @@
 {% endblock title %}
 
 {% block content %}
+
+    {% if form.errors %}
+        Please correct the errors below.
+    {% endif %}
+
     <form action="{% url 'register:signup' %}" method="post">
         {% csrf_token %}
 
@@ -14,6 +19,10 @@
             </div>
             <div class="form-input">
                 {{ field }}
+            </div>
+
+            <div class="form-error">
+                {{ field.errors }}
             </div>
         {% endfor %}
 

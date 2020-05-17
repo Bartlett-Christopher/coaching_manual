@@ -73,11 +73,20 @@ class TestSignUpView(TestCase):
         mocks['get_context'].assert_called_once_with(request)
         mocks['render_to_response'].assert_called_once_with(context)
 
-    def test_post__no_post_data(self):
-        self.fail('Method not implemented yet.')
-
     def test_post__data_invalid(self):
-        self.fail('Method not implemented yet.')
+        request = self.rf.post(self.url, data={})
+
+        with patch.multiple(self.view, get_form=DEFAULT, get_context=DEFAULT, render_to_response=DEFAULT) as mocks:
+            mocks['get_form'].return_value = SignUpForm(data={})
+            mocks['get_context'].return_value = {}
+            mocks['render_to_response'].return_value = HttpResponse()
+
+            response = self.view.post(request)
+
+        self.assertIsInstance(response, HttpResponse)
+        mocks['get_form'].assert_called_once_with(request)
+        mocks['get_context'].assert_called_once_with(request)
+        mocks['render_to_response'].assert_called_once_with({})
 
     def test_post__external_api_error(self):
         self.fail('Method not implemented yet.')
