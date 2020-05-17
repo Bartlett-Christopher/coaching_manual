@@ -1,3 +1,8 @@
 Django==3.0.6
+django-countries==6.1.2
+django-extensions==2.2.9
+psycopg2==2.7.5
+
+# coding standards
 flake8==3.8.1
 pylint==2.5.2
