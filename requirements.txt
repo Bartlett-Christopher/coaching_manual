@@ -6,3 +6,4 @@ psycopg2==2.7.5
 # coding standards
 flake8==3.8.1
 pylint==2.5.2
+pylint-django==2.0.15

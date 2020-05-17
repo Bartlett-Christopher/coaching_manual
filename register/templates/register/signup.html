@@ -1,0 +1,24 @@
+{% extends 'register/base.html' %}
+
+{% block title %}
+    Sign up
+{% endblock title %}
+
+{% block content %}
+    <form action="{% url 'register:signup' %}" method="post">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="form-label">
+                {{ field.label_tag}}
+            </div>
+            <div class="form-input">
+                {{ field }}
+            </div>
+        {% endfor %}
+
+        <div class="form-button">
+            <input type="submit" value="Sign up">
+        </div>
+    </form>
+{% endblock content %}

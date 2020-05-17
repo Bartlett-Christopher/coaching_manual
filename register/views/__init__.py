@@ -5,3 +5,8 @@
 
 .. moduleauthor:: Chris Bartlett
 """
+from register.views.signup import SignUpView
+
+__all__ = [
+    'SignUpView'
+]
