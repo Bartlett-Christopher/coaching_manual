@@ -10,10 +10,14 @@
         Please correct the errors below.
     {% endif %}
 
+    {% if api_error %}
+        There was an error processing your request, please try again later.
+    {% endif %}
+
     <form action="{% url 'register:signup' %}" method="post">
         {% csrf_token %}
 
-        {% for field in form %}
+        {% for field in form.visible_fields %}
             <div class="form-label">
                 {{ field.label_tag}}
             </div>
