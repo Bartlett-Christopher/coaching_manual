@@ -41,7 +41,7 @@ class UserAPIView(APIView):
         # call external API
         price_response = requests.get(
             self.price_api_url,
-            params={'int_country_code': serializer.data['country']},
+            params={'int_country_code': request.data['country']},
         )
 
         if price_response.status_code != 200:
@@ -50,6 +50,7 @@ class UserAPIView(APIView):
                 status=status.HTTP_502_BAD_GATEWAY
             )
 
-        price_info = price_response.json()
-        serializer.save(price_info=price_info['data'])
+        price_data = price_response.json()
+        active_plans = [plan for plan in price_data['data'] if plan['active']]
+        serializer.save(price_info=active_plans)
         return Response(serializer.data)
