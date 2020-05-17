@@ -21,4 +21,5 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
             'email',
             'country',
+            'price_info'
         )

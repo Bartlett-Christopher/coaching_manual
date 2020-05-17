@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 
 from register.api.serializers import UserSerializer
+from register.models import User
 
 
 class UserAPIView(APIView):
@@ -19,6 +20,13 @@ class UserAPIView(APIView):
     price_api_url = \
         'https://us-central1-development-1300.cloudfunctions.net/' \
         'BETechnicalTest'
+
+    def get(self, request, *args, **kwargs):
+        """Get all registered users."""
+        users = User.objects.order_by('id')
+
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         """Create a new User."""
@@ -44,7 +52,4 @@ class UserAPIView(APIView):
 
         price_info = price_response.json()
         serializer.save(price_info=price_info['data'])
-
-        response_data = {'price_info': price_info['data']}
-        response_data.update(serializer.data)
-        return Response(response_data)
+        return Response(serializer.data)
