@@ -9,6 +9,7 @@ import json
 
 import requests
 
+from django.conf import settings
 from django.urls import reverse
 from django.views.generic import TemplateView
 
@@ -20,7 +21,11 @@ class UserListView(TemplateView):
     def get(self, request, *args, **kwargs):
         """GET handler"""
         url = request.build_absolute_uri(reverse('api:user'))
-        response = requests.get(url)
+        headers = {
+            'Authorization': 'Api-Key {}'.format(settings.API_KEY),
+            'Content-Type': 'application/json',
+        }
+        response = requests.get(url, headers=headers)
 
         if response.status_code != 200:
             return self.render_to_response({})

@@ -10,6 +10,7 @@ import requests
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework_api_key.permissions import HasAPIKey
 
 from register.api.serializers import UserSerializer
 from register.models import User
@@ -17,6 +18,9 @@ from register.models import User
 
 class UserAPIView(APIView):
     """User model API handler."""
+
+    permission_classes = [HasAPIKey]
+
     price_api_url = \
         'https://us-central1-development-1300.cloudfunctions.net/' \
         'BETechnicalTest'

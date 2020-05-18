@@ -23,6 +23,9 @@ PROJECT_DIR = os.path.abspath(os.path.join(BASE_DIR, '../'))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'c=uoo+1f@xt(a&0!h!td7x)w)_lvv6g)net$)269eb@-y+2=68'
 
+# Register API key
+API_KEY = os.environ.get('API_KEY')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -41,6 +44,7 @@ INSTALLED_APPS = [
 
     # third party apps
     'rest_framework',
+    'rest_framework_api_key',
 
     # project apps
     'register'
@@ -92,6 +96,13 @@ DATABASES = {
         'ATOMIC_REQUESTS': True,
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 
 # Password validation
