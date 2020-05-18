@@ -6,13 +6,12 @@
 .. moduleauthor:: Chris Bartlett
 """
 import json
-import requests
 
-from django.conf import settings
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import TemplateView
 
+from register.api.utils.make_request import make_request
 from register.forms import SignUpForm
 
 
@@ -58,14 +57,11 @@ class SignUpView(TemplateView):
     def post(self, request, *args, **kwargs):
         """POST handler"""
         url = request.build_absolute_uri(reverse('api:user'))
-        headers = {
-            'Authorization': 'Api-Key {}'.format(settings.API_KEY),
-            'Content-Type': 'application/json',
-        }
-        response = requests.post(
+
+        response = make_request(
             url=url,
-            data=json.dumps(request.POST),
-            headers=headers,
+            method='post',
+            data=json.dumps(request.POST)
         )
 
         if response.status_code == 400:
@@ -73,7 +69,7 @@ class SignUpView(TemplateView):
             context['errors'] = response.json()
             return self.render_to_response(context)
 
-        elif response.status_code == 502:
+        if response.status_code == 502:
             context = self.get_context(request)
             context['gateway_error'] = response.json()
             return self.render_to_response(context)
