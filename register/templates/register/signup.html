@@ -1,0 +1,37 @@
+{% extends 'register/base.html' %}
+
+{% block title %}
+    Sign up
+{% endblock title %}
+
+{% block content %}
+
+    {% if errors %}
+        Please correct the errors below.
+    {% endif %}
+
+    {% if gateway_error %}
+        There was an error processing your request, please try again later.
+    {% endif %}
+
+    <form action="{% url 'register:signup' %}" method="post">
+        {% csrf_token %}
+
+        {% for field in form.visible_fields %}
+            <div class="form-label">
+                {{ field.label_tag}}
+            </div>
+            <div class="form-input">
+                {{ field }}
+            </div>
+
+            <div class="form-error">
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+
+        <div class="form-button">
+            <input type="submit" value="Sign up">
+        </div>
+    </form>
+{% endblock content %}

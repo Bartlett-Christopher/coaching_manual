@@ -1,0 +1,27 @@
+{% extends 'register/base.html' %}
+
+{% block title %}
+    Registration complete
+{% endblock title %}
+
+{% block content %}
+    <div class="container-title">
+        <h1 class="page-title">Registration complete</h1>
+    </div>
+
+    {% if first_name %}
+    {% endif %}
+
+    <div class="container-blurb">
+        <p class="page-blurb">
+            Thank you {{ first_name }} for signing up with us.
+        </p>
+        <p>
+            More content on this site will be added soon :).
+        </p>
+        <p>
+            Click <a href="{% url 'register:signup' %}">here</a> to sign up someone else.
+        </p>
+
+    </div>
+{% endblock content %}
