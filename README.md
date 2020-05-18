@@ -59,7 +59,7 @@ export API_KEY='******'
 
 - Restart the site server using the `runserver` command
 
-- Your now all up and running :)  
+- You're now all up and running :)  
 Navigate to localhost:8000 to register user data.  
 Navigate to localhost:8000/list to see all the registered users
 
