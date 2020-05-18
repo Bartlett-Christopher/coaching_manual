@@ -86,23 +86,10 @@ WSGI_APPLICATION = 'registration_site.wsgi.application'
 
 DATABASES = {
     'default': {
-        'HOST': '',
-        'NAME': 'coaching_manual',
-        'USER': '',
-        'PASSWORD': '',
-        'POST': '5432',
-        'CONN_MAX_AGE': 0,
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'ATOMIC_REQUESTS': True,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
 
 
 # Password validation
