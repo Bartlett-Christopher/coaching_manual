@@ -58,8 +58,14 @@ class SignUpView(TemplateView):
         url = request.build_absolute_uri(reverse('api:user'))
         response = requests.post(url, request.POST)
 
-        if response.status_code != 200:
+        if response.status_code == 400:
             context = self.get_context(request)
+            context['errors'] = response.json()
+            return self.render_to_response(context)
+
+        elif response.status_code == 502:
+            context = self.get_context(request)
+            context['gateway_error'] = response.json()
             return self.render_to_response(context)
 
         return render(request, 'register/complete.html', response.json())

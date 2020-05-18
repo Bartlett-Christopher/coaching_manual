@@ -6,11 +6,11 @@
 
 {% block content %}
 
-    {% if form.errors %}
+    {% if errors %}
         Please correct the errors below.
     {% endif %}
 
-    {% if api_error %}
+    {% if gateway_error %}
         There was an error processing your request, please try again later.
     {% endif %}
 
