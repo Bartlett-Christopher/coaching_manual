@@ -5,8 +5,6 @@
 
 .. moduleauthor:: Chris Bartlett
 """
-import json
-
 from django.urls import reverse
 from django.views.generic import TemplateView
 

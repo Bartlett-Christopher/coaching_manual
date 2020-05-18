@@ -9,6 +9,8 @@ import requests
 
 from django.conf import settings
 
+from register.api.exceptions import RegisterAPIException
+
 
 def make_request(url, method, data=None):
     """
@@ -34,6 +36,9 @@ def make_request(url, method, data=None):
     if data:
         kwargs['data'] = data
 
-    handler = getattr(requests, method.lower())
+    try:
+        handler = getattr(requests, method.lower())
+    except requests.RequestException:
+        raise RegisterAPIException()
 
     return handler(**kwargs)
