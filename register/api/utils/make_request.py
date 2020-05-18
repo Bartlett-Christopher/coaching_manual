@@ -9,8 +9,6 @@ import requests
 
 from django.conf import settings
 
-from register.api.exceptions import RegisterAPIDown
-
 
 def make_request(url, method, data=None):
     """
@@ -38,9 +36,4 @@ def make_request(url, method, data=None):
 
     handler = getattr(requests, method.lower())
 
-    try:
-        response = handler(**kwargs)
-    except requests.ConnectionError:
-        raise RegisterAPIDown()
-
-    return response
+    return handler(**kwargs)

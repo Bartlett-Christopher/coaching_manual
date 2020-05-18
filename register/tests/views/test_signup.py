@@ -7,14 +7,14 @@
 """
 from __future__ import unicode_literals
 
-from unittest.mock import DEFAULT, patch
+import json
+from unittest.mock import DEFAULT, Mock, patch
 
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
 from register.forms.signup import SignUpForm
-from register.models import User
 from register.views.signup import SignUpView
 
 
@@ -60,12 +60,6 @@ class TestSignUpView(TestCase):
         self.assertIsInstance(form, SignUpForm)
         self.assertFalse(form.is_bound)
 
-    def test_get_price_information__api_error(self):
-        self.fail('Method not implemented yet.')
-
-    def test_get_price_information__api_success(self):
-        self.fail('Method not implemented yet.')
-
     def test_get__returns_response(self):
         request = self.rf.get(self.url)
         context = {'form': SignUpForm}
@@ -81,90 +75,98 @@ class TestSignUpView(TestCase):
         mocks['get_context'].assert_called_once_with(request)
         mocks['render_to_response'].assert_called_once_with(context)
 
-    def test_post__data_invalid(self):
+    @patch('register.views.signup.make_request')
+    def test_post__data_invalid(self, mock_make_request):
         request = self.rf.post(self.url, data={})
+        api_response = Mock(**{
+            'status_code': 400,
+            'json.return_value': {'data': 'errors'}
+        })
+        mock_make_request.return_value = api_response
 
         with patch.multiple(
                 self.view,
-                get_form=DEFAULT,
                 get_context=DEFAULT,
                 render_to_response=DEFAULT
         ) as mocks:
-            mocks['get_form'].return_value = SignUpForm(data={})
             mocks['get_context'].return_value = {}
             mocks['render_to_response'].return_value = HttpResponse()
 
             response = self.view.post(request)
 
         self.assertIsInstance(response, HttpResponse)
-        mocks['get_form'].assert_called_once_with(request)
-        mocks['get_context'].assert_called_once_with(request)
-        mocks['render_to_response'].assert_called_once_with({})
-
-    def test_post__external_api_error(self):
-        data = {
-            'first_name': 'Chris',
-            'last_name': 'Bartlett',
-            'email': 'bartlett.christopher.p@gmail.com',
-            'country': 'GB',
-        }
-        request = self.rf.post(self.url, data=data)
-
-        with patch.multiple(
-                self.view,
-                get_form=DEFAULT,
-                get_price_information=DEFAULT,
-                get_context=DEFAULT,
-                render_to_response=DEFAULT
-        ) as mocks:
-            mocks['get_form'].return_value = SignUpForm(data=data)
-            mocks['get_price_information'].return_value = {}
-            mocks['get_context'].return_value = {}
-            mocks['render_to_response'].return_value = HttpResponse()
-
-            response = self.view.post(request)
-
-        self.assertIsInstance(response, HttpResponse)
-        mocks['get_form'].assert_called_once_with(request)
-        mocks['get_price_information'].assert_called_once_with('GB')
         mocks['get_context'].assert_called_once_with(request)
         mocks['render_to_response'].assert_called_once_with(
-            {'api_error': True}
+            {'errors': {'data': 'errors'}}
+        )
+        mock_make_request.assert_called_once_with(
+            url=request.build_absolute_uri(reverse('api:user')),
+            method='post',
+            data=json.dumps({})
         )
 
-    @patch('register.views.signup.render')
-    def test_post__success_saves_data(self, mock_render):
+    @patch('register.views.signup.make_request')
+    def test_post__external_api_error(self, mock_make_request):
+        api_response = Mock(**{
+            'status_code': 502,
+            'json.return_value': {'data': 'errors'}
+        })
+        mock_make_request.return_value = api_response
         data = {
             'first_name': 'Chris',
             'last_name': 'Bartlett',
-            'email': 'bartlett.christopher.p@gmail.com',
+            'email': 'chris@test.com',
             'country': 'GB',
         }
         request = self.rf.post(self.url, data=data)
 
-        self.assertEqual(User.objects.count(), 0)
-
         with patch.multiple(
                 self.view,
-                get_form=DEFAULT,
-                get_price_information=DEFAULT,
+                get_context=DEFAULT,
+                render_to_response=DEFAULT
         ) as mocks:
-            mocks['get_form'].return_value = SignUpForm(data=data)
-            mocks['get_price_information'].return_value = self.price_info
+            mocks['get_context'].return_value = {}
+            mocks['render_to_response'].return_value = HttpResponse()
 
-            self.view.post(request)
+            response = self.view.post(request)
 
-        self.assertEqual(User.objects.count(), 1)
-        user = User.objects.first()
-        self.assertEqual(user.first_name, 'Chris')
-        self.assertEqual(user.last_name, 'Bartlett'),
-        self.assertEqual(user.email, 'bartlett.christopher.p@gmail.com')
-        self.assertEqual(user.country, 'GB')
-        self.assertDictEqual(user.price_info, self.price_info)
-        mocks['get_form'].assert_called_once_with(request)
-        mocks['get_price_information'].assert_called_once_with('GB')
+        self.assertIsInstance(response, HttpResponse)
+        mocks['get_context'].assert_called_once_with(request)
+        mocks['render_to_response'].assert_called_once_with(
+            {'gateway_error': {'data': 'errors'}}
+        )
+        mock_make_request.assert_called_once_with(
+            url=request.build_absolute_uri(reverse('api:user')),
+            method='post',
+            data=json.dumps(data)
+        )
+
+    @patch('register.views.signup.make_request')
+    @patch('register.views.signup.render')
+    def test_post__success_saves_data(self, mock_render, mock_make_request):
+        data = {
+            'first_name': 'Chris',
+            'last_name': 'Bartlett',
+            'email': 'chris@test.com',
+            'country': 'GB',
+        }
+        api_response = Mock(**{
+            'status_code': 200,
+            'json.return_value': data
+        })
+        mock_make_request.return_value = api_response
+
+        request = self.rf.post(self.url, data=data)
+
+        self.view.post(request)
+
         mock_render.assert_called_once_with(
             request,
             'register/complete.html',
             data
+        )
+        mock_make_request.assert_called_once_with(
+            url=request.build_absolute_uri(reverse('api:user')),
+            method='post',
+            data=json.dumps(data)
         )
