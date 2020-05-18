@@ -28,9 +28,5 @@ class UserListView(TemplateView):
 
         context = self.get_context_data()
 
-        users = response.json()
-        for user in users:
-            user['price_info'] = json.loads(user['price_info'])
-
-        context['users'] = users
+        context['users'] = response.json()
         return self.render_to_response(context)

@@ -13,6 +13,8 @@ from register.models import User
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for User model."""
 
+    price_info = serializers.ListField(required=False)
+
     class Meta:
         """User serializer Metadata."""
         model = User
